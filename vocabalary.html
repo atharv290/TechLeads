@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabulary Game </title>
+    
+    <style>
+        body {
+    background-color: #e0f7fa;
+    background-image: url('a.jpeg'); /* Ensure you have the image 'a.jpeg' */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Keeps the background fixed when scrolling */
+    font-family: 'Arial', sans-serif;
+    color: #2c3e50;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden; /* Prevents scrolling when not necessary */
+}
+
+.container {
+    background: linear-gradient(135deg, rgba(67, 180, 218, 0.9), rgba(0, 188, 212, 0.9)); /* Gradient background */
+    padding: 40px;
+    border-radius: 25px;
+    max-width: 650px;
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.4); /* Stronger shadow for depth */
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Smooth transitions */
+    text-align: center;
+    position: relative;
+}
+
+.container:hover {
+    transform: scale(1.05);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+h1 {
+    font-size: 3em;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 25px;
+    text-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); /* Title shadow */
+}
+
+p {
+    font-size: 1.4em;
+    margin-bottom: 25px;
+    color: #fff;
+    text-shadow: 0 3px 8px rgba(0, 0, 0, 0.4); /* Paragraph shadow */
+}
+
+.btn {
+    background-color: #00bcd4;
+    color: white;
+    padding: 14px 35px;
+    border: none;
+    border-radius: 50px; /* Fully rounded button */
+    font-size: 1.3em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    margin: 15px;
+    box-shadow: 0 10px 30px rgba(0, 188, 212, 0.6); /* Button shadow */
+}
+
+.btn:hover {
+    background-color: #008ba3;
+    transform: translateY(-7px); /* Bigger lift on hover */
+    box-shadow: 0 15px 45px rgba(0, 188, 212, 0.9); /* Stronger shadow on hover */
+}
+
+.option {
+    background-color: #ff9800;
+    color: white;
+    padding: 18px;
+    border: none;
+    border-radius: 25px; /* More rounded corners */
+    font-size: 1.3em;
+    cursor: pointer;
+    margin: 15px;
+    transition: background-color 0.3s, transform 0.3s ease, box-shadow 0.3s;
+    box-shadow: 0 8px 25px rgba(255, 152, 0, 0.5); /* Option button shadow */
+}
+
+.option:hover {
+    background-color: #e67e22;
+    transform: translateY(-6px); /* Slightly higher hover effect */
+    box-shadow: 0 15px 40px rgba(255, 152, 0, 0.7);
+}
+
+.correct {
+    background-color: #4caf50;
+    animation: pulse 0.7s infinite; /* Slower pulse */
+    box-shadow: 0 12px 40px rgba(76, 175, 80, 0.6); /* Stronger shadow on correct */
+}
+
+.wrong {
+    background-color: #f44336;
+    animation: shake 0.4s ease; /* More dramatic shake */
+    box-shadow: 0 12px 40px rgba(244, 67, 54, 0.7);
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.15); /* Larger pulse */
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    20%, 60% {
+        transform: translateX(-15px); /* Bigger shake */
+    }
+    40%, 80% {
+        transform: translateX(15px);
+    }
+}
+
+.score {
+    font-size: 2em;
+    margin-top: 30px;
+    color: #fff;
+    font-weight: bold;
+    text-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+footer {
+    margin-top: 50px;
+    color: #ffffff;
+    font-size: 1.2em;
+    text-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Vocabulary Game </h1>
+        <p id="definition"></p>
+        <div id="options"></div>
+        <button id="next-btn" class="btn" onclick="nextQuestion()">Next Question</button>
+        <p id="score" class="score"></p>
+    </div>
+
+    <script>
+        const vocabulary = [
+    { word: "Apple", definition: "A round fruit with red or green skin." },
+    { word: "Elephant", definition: "A large animal with a trunk and big ears." },
+    { word: "Sun", definition: "The star at the center of our solar system." },
+    { word: "Car", definition: "A vehicle with four wheels that people drive." },
+    { word: "Tree", definition: "A tall plant with a trunk and branches." },
+];
+
+let currentQuestionIndex = 0;
+let score = 0;
+
+function startGame() {
+    currentQuestionIndex = 0;
+    score = 0;
+    document.getElementById("score").innerText = `Score: ${score}`;
+    nextQuestion();
+}
+
+function nextQuestion() {
+    if (currentQuestionIndex < vocabulary.length) {
+        const currentQuestion = vocabulary[currentQuestionIndex];
+        document.getElementById("definition").innerText = currentQuestion.definition;
+
+        const options = createOptions(currentQuestion.word);
+        document.getElementById("options").innerHTML = options.join('');
+        currentQuestionIndex++;
+    } else {
+        document.getElementById("definition").innerText = "Game Over! Your score is: " + score;
+        document.getElementById("options").innerHTML = '';
+        document.getElementById("next-btn").style.display = "none";
+    }
+}
+
+function createOptions(correctWord) {
+    const words = vocabulary.map(item => item.word);
+    const incorrectOptions = words.filter(word => word !== correctWord);
+    const options = [correctWord, ...getRandomItems(incorrectOptions, 2)];
+    return options.map(word => `<button class="option" onclick="selectOption('${word}', '${correctWord}')">${word}</button>`);
+}
+
+function getRandomItems(array, count) {
+    const shuffled = array.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+}
+
+function selectOption(selectedWord, correctWord) {
+    const options = document.querySelectorAll(".option");
+    options.forEach(option => {
+        option.disabled = true;
+        if (option.innerText === correctWord) {
+            option.classList.add("correct");
+        } else {
+            option.classList.add("wrong");
+        }
+    });
+
+    if (selectedWord === correctWord) {
+        score++;
+        document.getElementById("score").innerText = `Score: ${score}`;
+        
+    }
+
+    document.getElementById("next-btn").style.display = "block";
+    saveScore(score);
+}
+function saveScore(score) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "save_score.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+            // Assuming you have a way to get the user's ID
+            var userId = 1; // Replace this with the actual user ID from your session or authentication method.
+
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    console.log('Score saved successfully: ' + xhr.responseText);
+                    alert('Score saved successfully!');
+                } else {
+                    console.error('Error saving score: ' + xhr.status);
+                    alert('Error saving score. Please try again.');
+                }
+            };
+
+            // Send the score along with the user ID
+            xhr.send("user_id=" + userId + "&score=" + score);
+        }
+
+
+// Start the game on page load
+window.onload = startGame;
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Read Aloud</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #fff3e0; /* Light orange background */
+            text-align: center;
+            padding: 50px;
+        }
+        h1 {
+            font-size: 3rem;
+            color: #e65100; /* Dark orange */
+            margin-bottom: 30px;
+        }
+        .section {
+            background-color: #ffffff; /* White background */
+            border-radius: 10px;
+            padding: 20px;
+            width: 300px;
+            margin: 0 auto;
+            box-shadow: 0px 5px 10px rgba(0,0,0,0.1);
+        }
+        
+        .section h2 {
+            color: #bf360c; /* Darker orange */
+        }
+        select {
+            padding: 10px;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 100%; /* Full width */
+            margin-bottom: 20px; /* Space below select */
+        }
+        button {
+            padding: 12px 25px;
+            font-size: 1.2rem;
+            background-color: #ff9800; /* Orange */
+            color: #ffffff;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            margin: 10px;
+            display: inline-block; /* Align buttons horizontally */
+            width: 75%; /* Adjust width */
+        }
+        button:hover {
+            background-color: #ffb300; /* Lighter orange */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Read Aloud</h1>
+
+    <div class="section">
+        <h2>Select a Sentence</h2>
+        <select id="sentence-select">
+            <option value="">Select a sentence...</option>
+            <option value="The cat sat on the mat.">The cat sat on the mat.</option>
+            <option value="Birds can fly high in the sky.">Birds can fly high in the sky.</option>
+            <option value="I love to read stories.">I love to read stories.</option>
+            <option value="The sun rises in the east.">The sun rises in the east.</option>
+        </select>
+        <div>
+            <button onclick="readSentence()">Read Aloud</button>
+            <button onclick="goBack()">Back to Menu</button>
+        </div>
+    </div>
+
+    <script>
+        function readSentence() {
+            const sentenceSelect = document.getElementById('sentence-select');
+            const selectedSentence = sentenceSelect.value;
+
+            if (selectedSentence) {
+                const utterance = new SpeechSynthesisUtterance(selectedSentence);
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert('Please select a sentence to read.');
+            }
+        }
+
+        function goBack() {
+            window.history.back(); // Go back to the previous page
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Body Explorer</title>
+   
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f8ff;
+    color: #333;
+    text-align: center;
+}
+
+.container {
+    margin: 50px auto;
+    padding: 20px;
+    border: 2px solid #007bff;
+    border-radius: 10px;
+    width: 60%;
+    background-color: #ffffff;
+}
+
+h1 {
+    color: #007bff;
+}
+
+.body-parts {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.part {
+    background-color: #add8e6;
+    border: 2px solid #007bff;
+    border-radius: 5px;
+    padding: 15px;
+    margin: 10px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.part:hover {
+    transform: scale(1.1);
+    background-color: #87cefa;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b2;
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Human Body Explorer!</h1>
+        <p>Click on the body parts to learn more!</p>
+        <div class="body-parts">
+            <div class="part" id="head">Head</div>
+            <div class="part" id="arms">Arms</div>
+            <div class="part" id="legs">Legs</div>
+            <div class="part" id="heart">Heart</div>
+            <div class="part" id="lungs">Lungs</div>
+            <div class="part" id="stomach">Stomach</div>
+            <div class="part" id="brain">Brain</div>
+            <div class="part" id="liver">Liver</div>
+        </div>
+        <button id="newGameBtn">New Game</button>
+        <button onclick="backtohome()">Back</button>
+    </div>
+    <script>
+        const bodyParts = [
+    { name: 'Head', info: 'The head contains the brain, eyes, ears, nose, and mouth.' },
+    { name: 'Arms', info: 'Arms help you lift and carry things.' },
+    { name: 'Legs', info: 'Legs help you walk, run, and jump.' },
+    { name: 'Heart', info: 'The heart pumps blood throughout the body.' },
+    { name: 'Lungs', info: 'Lungs help you breathe in oxygen and breathe out carbon dioxide.' },
+    { name: 'Stomach', info: 'The stomach digests the food you eat.' },
+    { name: 'Brain', info: 'The brain controls your thoughts and movements.' },
+    { name: 'Liver', info: 'The liver helps clean the blood and aids in digestion.' },
+];
+
+const bodyPartElements = document.querySelectorAll('.part');
+const newGameBtn = document.getElementById('newGameBtn');
+function backtohome(){
+    window.location.href="sciencemain.html"
+}
+function resetGame() {
+    // Randomly shuffle the body parts array
+    const shuffledParts = bodyParts.sort(() => Math.random() - 0.5);
+    // Select the first 4 body parts
+    const selectedParts = shuffledParts.slice(0, 4);
+
+    // Clear existing body parts
+    bodyPartElements.forEach((element, index) => {
+        if (selectedParts[index]) {
+            element.textContent = selectedParts[index].name;
+            element.dataset.info = selectedParts[index].info;
+            element.style.display = 'block'; // Show the part
+            element.classList.remove('selected'); // Remove selected class
+        } else {
+            element.style.display = 'none'; // Hide the part if not selected
+        }
+    });
+}
+
+// Function to display information when a part is clicked
+bodyPartElements.forEach(part => {
+    part.addEventListener('click', () => {
+        alert(part.dataset.info);
+        part.classList.add('selected'); // Mark as selected
+    });
+});
+
+// Start a new game
+newGameBtn.addEventListener('click', resetGame);
+
+// Initialize the game
+resetGame();
+
+    </script>
+</body>
+</html>

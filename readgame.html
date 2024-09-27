@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Read Aloud Game</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #fff3e0; /* Light orange background */
+            text-align: center;
+            padding: 50px;
+        }
+        h1 {
+            font-size: 3rem;
+            color: #e65100; /* Dark orange */
+            margin-bottom: 30px;
+        }
+        .section {
+            background-color: #ffffff; /* White background */
+            border-radius: 10px;
+            padding: 20px;
+            width: 300px;
+            margin: 0 auto;
+            box-shadow: 0px 5px 10px rgba(0,0,0,0.1);
+        }
+        
+        .section h2 {
+            color: #bf360c; /* Darker orange */
+        }
+        select {
+            padding: 10px;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 100%; /* Full width */
+            margin-bottom: 20px; /* Space below select */
+        }
+        button {
+            padding: 12px 25px;
+            font-size: 1.2rem;
+            background-color: #ff9800; /* Orange */
+            color: #ffffff;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            margin: 10px;
+            display: inline-block; /* Align buttons horizontally */
+            width: 45%; /* Adjust width */
+        }
+        button:hover {
+            background-color: #ffb300; /* Lighter orange */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Read Aloud Game</h1>
+
+    <div class="section" id="game-section" style="display: none;">
+        <h2 id="sentence"></h2>
+        <button onclick="startListening()">Speak Now</button>
+        <p id="feedback" style="margin-top: 20px;"></p>
+    </div>
+
+    <div class="section" id="start-section">
+        <h2>Select a Sentence</h2>
+        <select id="sentence-select">
+            <option value="">-- Select a Sentence --</option>
+            <option value="The cat sat on the mat.">The cat sat on the mat.</option>
+            <option value="Birds can fly high in the sky.">Birds can fly high in the sky.</option>
+            <option value="I love to read stories.">I love to read stories.</option>
+            <option value="The sun rises in the east.">The sun rises in the east.</option>
+            <option value="Fish swim in the water.">Fish swim in the water.</option>
+        </select>
+        <button onclick="startGame()">Play Game</button>
+        <button onclick="goBack()">Back to Menu</button>
+    </div>
+
+    <script>
+        const sentences = [
+            "The cat sat on the mat.",
+            "Birds can fly high in the sky.",
+            "I love to read stories.",
+            "The sun rises in the east.",
+            "Fish swim in the water."
+        ];
+
+        let currentSentenceIndex = 0;
+        let score = 0;
+        let gameOver = false; // Flag to track if the game is over
+
+        function startGame() {
+            score = 0;
+            currentSentenceIndex = 0;
+            gameOver = false; // Reset gameOver flag
+            document.getElementById('start-section').style.display = 'none';
+            document.getElementById('game-section').style.display = 'block';
+            showNextSentence();
+        }
+
+        function showNextSentence() {
+            if (currentSentenceIndex < sentences.length) {
+                document.getElementById('sentence').textContent = sentences[currentSentenceIndex];
+                document.getElementById('feedback').textContent = '';
+            } else {
+                endGame();
+            }
+        }
+
+        let recognition; // Declare recognition outside the function for broader access
+
+        function startListening() {
+            if (recognition && recognition.active) {
+                document.getElementById('feedback').textContent = 'Already listening. Please stop first.';
+                return;
+            }
+
+            recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'en-US';
+            recognition.interimResults = true; 
+            recognition.maxAlternatives = 1; 
+            recognition.continuous = true; 
+
+            recognition.start();
+
+            recognition.onstart = () => {
+                document.getElementById('feedback').textContent = 'Listening...'; 
+            };
+
+            recognition.onresult = (event) => {
+                const userSpeech = event.results[event.resultIndex][0].transcript; 
+                document.getElementById('feedback').textContent = `You said: ${userSpeech}`; 
+                checkPronunciation(userSpeech); // Check pronunciation after recognizing speech
+            };
+
+            recognition.onerror = (event) => {
+                document.getElementById('feedback').textContent = 'Error occurred in recognition: ' + event.error;
+                if (event.error === 'network') {
+                    setTimeout(startListening, 2000); 
+                }
+            };
+
+            recognition.onend = () => {
+                document.getElementById('feedback').textContent = 'Stopped listening. Click "Speak Now" to try again.'; 
+            };
+        }
+
+        function checkPronunciation(userSpeech) {
+            const correctSentence = sentences[currentSentenceIndex];
+            if (userSpeech.toLowerCase().trim() === correctSentence.toLowerCase().trim()) {
+                score++;
+                document.getElementById('feedback').textContent = 'Correct!';
+
+                // Check if the score reaches 5
+                if (score === 5) {
+                    endGame();
+                    return; // End the game
+                }
+            } else {
+                document.getElementById('feedback').textContent = 'Incorrect! The correct sentence was: "' + correctSentence + '"';
+            }
+            currentSentenceIndex++;
+            setTimeout(showNextSentence, 2000);
+        }
+
+        function endGame() {
+            if (gameOver) return; // Prevent multiple alerts
+            gameOver = true; // Set gameOver flag to true
+            document.getElementById('game-section').style.display = 'none';
+            alert('Game Over! Your final score is: ' + score);
+            saveScore(score); // Save the score when the game ends
+            document.getElementById('start-section').style.display = 'block'; 
+        }
+
+        function saveScore(score) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "save_score.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+            // Assuming you have a way to get the user's ID
+            var userId = 1; // Replace this with the actual user ID from your session or authentication method.
+
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    console.log('Score saved successfully: ' + xhr.responseText);
+                    alert('Score saved successfully!');
+                } else {
+                    console.error('Error saving score: ' + xhr.status);
+                    alert('Error saving score. Please try again.');
+                }
+            };
+
+            // Send the score along with the user ID
+            xhr.send("user_id=" + userId + "&score=" + score);
+        }
+
+        function loadScore() {
+            const savedScore = localStorage.getItem('readAloudGameScore');
+            if (savedScore) {
+                alert('Your last saved score was: ' + savedScore); // Display the last saved score
+            }
+        }
+
+        function goBack() {
+            window.history.back(); 
+        }
+
+        // Load score when the page is loaded
+        window.onload = loadScore;
+
+    </script>
+
+</body>
+</html>

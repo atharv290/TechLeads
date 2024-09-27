@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn Typing</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #fff3e0; /* Light orange background */
+            text-align: center;
+            padding: 50px;
+        }
+        h1 {
+            font-size: 3rem;
+            color: #e65100; /* Dark orange */
+            margin-bottom: 30px;
+        }
+        .section {
+            background-color: #ffffff; /* White background */
+            border-radius: 10px;
+            padding: 20px;
+            width: 900px;
+            margin: 0 auto;
+            box-shadow: 0px 5px 10px rgba(0,0,0,0.1);
+        }
+        input {
+            padding: 10px;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 100%; /* Full width */
+            margin-bottom: 20px; /* Space below input */
+        }
+        .sentence {
+            font-size: 1.5rem;
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap; /* Allow wrapping of words */
+            max-width: 100%; /* Ensure it fits within the section */
+        }
+        .letter {
+            font-weight: bold;
+            transition: color 0.3s; /* Smooth color transition */
+            margin: 1px; /* Space between letters */
+        }
+        .correct {
+            color: green;
+        }
+        .incorrect {
+            color: red;
+        }
+        button {
+            padding: 12px 25px;
+            font-size: 1.2rem;
+            background-color: #ff9800; /* Orange */
+            color: #ffffff;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #ffb300; /* Lighter orange */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Learn Typing</h1>
+
+    <div class="section">
+        <div id="sentence" class="sentence"></div>
+        <input type="text" id="userInput" placeholder="Start typing..." oninput="checkInput()">
+        <div id="feedback" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        const sentences = [
+            "The quick brown fox jumps over the lazy dog.",
+            "A journey of a thousand miles begins with a single step.",
+            "To be or not to be, that is the question.",
+            "All that glitters is not gold.",
+            "In the end, we will remember not the words of our enemies, but the silence of our friends."
+        ];
+
+        let currentSentenceIndex = 0;
+        let currentSentence = sentences[currentSentenceIndex];
+        let typedText = '';
+
+        function displaySentence() {
+            const sentenceContainer = document.getElementById('sentence');
+            sentenceContainer.innerHTML = ''; // Clear previous content
+            currentSentence.split('').forEach((letter) => {
+                const span = document.createElement('span');
+                span.className = 'letter';
+                span.textContent = letter; // Show the original letter (including spaces)
+                sentenceContainer.appendChild(span);
+            });
+        }
+
+        function checkInput() {
+            const userInput = document.getElementById('userInput').value;
+            typedText = userInput.split('');
+
+            const sentenceLetters = document.querySelectorAll('.letter');
+
+            sentenceLetters.forEach((span, index) => {
+                if (typedText[index] === undefined) {
+                    span.className = 'letter'; // Reset class if user has not typed enough
+                } else if (typedText[index] === currentSentence[index]) {
+                    span.className = 'letter correct'; // Correct letter
+                } else {
+                    span.className = 'letter incorrect'; // Incorrect letter
+                }
+            });
+
+            // Check if the entire sentence has been typed correctly
+            if (userInput === currentSentence) {
+                document.getElementById('feedback').textContent = 'Well done!';
+                currentSentenceIndex++;
+                if (currentSentenceIndex < sentences.length) {
+                    currentSentence = sentences[currentSentenceIndex];
+                    typedText = '';
+                    document.getElementById('userInput').value = ''; // Clear input field
+                    displaySentence();
+                } else {
+                    endGame();
+                }
+            }
+        }
+
+        function endGame() {
+            document.getElementById('feedback').textContent = 'Game Over! You finished all sentences.';
+            document.getElementById('userInput').disabled = true; // Disable input
+        }
+
+        // Start the game
+        displaySentence();
+    </script>
+
+</body>
+</html>

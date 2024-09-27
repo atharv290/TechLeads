@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planet Matching Game</title>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+
+        .game-container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .planets, .facts {
+            width: 40%;
+        }
+
+        .planets p, .facts div {
+            padding: 10px;
+            background-color: #fff;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .facts div {
+            min-height: 60px; /* Ensure there's space to drop */
+        }
+
+        .score {
+            margin-top: 20px;
+            font-size: 1.5em;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 20px;
+            background-color: #3052e9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0a21d2;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameSection">
+        <h2>Planet Matching Game</h2>
+        <p>Drag the planet name to match it with the correct fact!</p>
+        <div class="game-container">
+            <div class="planets" id="planet-names">
+                <!-- Planet names will be populated here -->
+            </div>
+            <div class="facts" id="planet-facts">
+                <!-- Facts will be populated here -->
+            </div>
+        </div>
+        <p class="score" id="scoreDisplay">Score: 0</p>
+        <button id="backButton" onclick="backToMain()">Back</button>
+    </div>
+
+    <div id="resultSection" class="hidden">
+        <h2>Congratulations! You've completed the game!</h2>
+        <p id="finalScore"></p>
+        <button onclick="playAgain()">Play Again</button>
+    </div>
+
+    <script>
+        const planetFacts = [
+            { name: "Earth", fact: "The third planet from the Sun, known for its life-sustaining atmosphere." },
+            { name: "Mars", fact: "The red planet known for its dusty surface and two moons." },
+            { name: "Jupiter", fact: "The largest planet in our Solar System, famous for its Great Red Spot." },
+            { name: "Venus", fact: "The hottest planet in the Solar System, with a thick atmosphere." },
+            { name: "Saturn", fact: "Known for its stunning rings made of ice and rock." }
+        ];
+
+        let score = 0;
+        let matchedCount = 0;
+
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+
+        function drag(event) {
+            event.dataTransfer.setData("text", event.target.id);
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const data = event.dataTransfer.getData("text");
+            const planetElement = document.getElementById(data);
+            const factElement = event.target;
+
+            // Validate the match
+            const planetName = planetElement.innerText;
+            if (planetFacts.find(p => p.name === planetName && p.fact === factElement.innerText)) {
+                factElement.appendChild(planetElement);
+                factElement.style.backgroundColor = "lightgreen"; // Correct match
+                score++;
+                matchedCount++;
+            } else {
+                factElement.style.backgroundColor = "red"; // Incorrect match
+            }
+
+            document.getElementById("scoreDisplay").innerText = `Score: ${score}`;
+
+            // Check if all planets are matched
+            if (matchedCount === 3) {
+                showResult();
+            }
+        }
+
+        // Shuffle planet names and facts each time
+        function shuffleGame() {
+            score = 0;
+            matchedCount = 0;
+            document.getElementById("scoreDisplay").innerText = `Score: ${score}`;
+            
+            const selectedFacts = [];
+            const shuffledFacts = [];
+
+            while (selectedFacts.length < 3) {
+                const randomIndex = Math.floor(Math.random() * planetFacts.length);
+                if (!selectedFacts.includes(planetFacts[randomIndex])) {
+                    selectedFacts.push(planetFacts[randomIndex]);
+                }
+            }
+
+            selectedFacts.forEach(item => {
+                shuffledFacts.push(item.name);
+            });
+
+            const shuffled = selectedFacts.sort(() => Math.random() - 0.5);
+
+            // Update planet names
+            const planetNamesContainer = document.getElementById("planet-names");
+            planetNamesContainer.innerHTML = '';
+            shuffled.forEach(planet => {
+                const planetElement = document.createElement("p");
+                planetElement.draggable = true;
+                planetElement.innerText = planet.name;
+                planetElement.id = planet.name.toLowerCase();
+                planetElement.ondragstart = (event) => drag(event);
+                planetNamesContainer.appendChild(planetElement);
+            });
+
+            // Update facts
+            const planetFactsContainer = document.getElementById("planet-facts");
+            planetFactsContainer.innerHTML = '';
+            shuffled.forEach(item => {
+                const factElement = document.createElement("div");
+                factElement.innerText = item.fact;
+                factElement.ondrop = (event) => drop(event);
+                factElement.ondragover = (event) => allowDrop(event);
+                planetFactsContainer.appendChild(factElement);
+            });
+        }
+
+        // Show result after game completion
+        function showResult() {
+            document.getElementById("gameSection").classList.add("hidden");
+            document.getElementById("resultSection").classList.remove("hidden");
+            document.getElementById("finalScore").innerText = `Your final score is: ${score}`;
+            saveScore(score); // Save score automatically
+        }
+
+        // Save score to the server
+        function saveScore(score) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "save_score.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+            // Assuming you have a way to get the user's ID
+            var userId = 1; // Replace this with the actual user ID from your session or authentication method.
+
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    console.log('Score saved successfully: ' + xhr.responseText);
+                    alert('Score saved successfully!');
+                } else {
+                    console.error('Error saving score: ' + xhr.status);
+                    alert('Error saving score. Please try again.');
+                }
+            };
+
+            // Send the score along with the user ID
+            xhr.send("user_id=" + userId + "&score=" + score);
+        }
+
+
+        // Reset the game for playing again
+        function playAgain() {
+            document.getElementById("gameSection").classList.remove("hidden");
+            document.getElementById("resultSection").classList.add("hidden");
+            shuffleGame(); // Shuffle and start a new game
+        }
+
+        // Back button functionality
+        function backToMain() {
+            // Add your logic for back button (e.g., go to main menu)
+            window.location.href="sciencemain.html";
+        }
+
+        // Initial game load
+        shuffleGame();
+    </script>
+</body>
+</html>

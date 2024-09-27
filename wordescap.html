@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordscapes Game</title>
+    <style>
+        body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to right, #e0f7fa, #b2ebf2); /* Gradient background */
+    color: #333;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    margin: 0 auto;
+    padding: 20px;
+    width: 80%;
+    max-width: 800px; /* Limit max width for larger screens */
+    border-radius: 10px; /* Rounded corners for the container */
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2); /* More prominent shadow effect */
+    background-color: #ffffff; /* White background for container */
+    transition: transform 0.3s; /* Animation effect for hover */
+}
+
+.container:hover {
+    transform: scale(1.02); /* Slightly enlarge the container on hover */
+}
+
+h1 {
+    font-size: 36px;
+    color: #00796b; /* Teal color for the title */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* More pronounced shadow */
+    margin-bottom: 20px; /* Space below the title */
+}
+
+.letters {
+    font-size: 32px;
+    margin: 20px 0;
+    font-weight: bold;
+    color: #00796b; /* Teal color for letters */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4); /* Enhanced text shadow */
+    animation: fadeIn 1s; /* Fade-in animation */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+#word-input {
+    padding: 12px;
+    width: 220px;
+    font-size: 20px;
+    border: 2px solid #00796b; /* Border color matching theme */
+    border-radius: 5px; /* Rounded corners for input */
+    transition: border-color 0.3s, box-shadow 0.3s; /* Smooth transitions */
+}
+
+#word-input:focus {
+    border-color: #004d40; /* Darker teal on focus */
+    box-shadow: 0 0 5px rgba(0, 121, 107, 0.5); /* Glow effect on focus */
+    outline: none; /* Remove default outline */
+}
+
+button {
+    padding: 12px 25px;
+    font-size: 20px;
+    cursor: pointer;
+    background-color: #00796b; /* Teal background */
+    color: white; /* White text */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners for buttons */
+    transition: background-color 0.3s, transform 0.3s; /* Smooth transitions */
+}
+
+button:hover {
+    background-color: #004d40; /* Darker teal on hover */
+    transform: scale(1.05); /* Slightly enlarge on hover */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Shadow effect on hover */
+}
+
+.found-words {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #4caf50; /* Green for found words */
+    animation: slideIn 0.5s; /* Slide-in animation */
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.hidden {
+    display: none;
+}
+
+.message {
+    margin-top: 20px;
+    font-weight: bold;
+    font-size: 20px;
+    color: #d32f2f; /* Red for error/success messages */
+    animation: bounce 0.5s; /* Bounce animation */
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.hints {
+    margin-top: 20px;
+    font-style: italic;
+    color: #2196f3; /* Blue for hints */
+    font-size: 18px;
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Wordscapes Game</h1>
+        <div id="letters" class="letters"></div>
+        <input type="text" id="word-input" placeholder="Type a word" />
+        <button id="submit">Submit</button>
+        <div id="found-words" class="found-words"></div>
+        <div id="message" class="message"></div>
+        <button id="restart" class="hidden">Restart Game</button>
+    </div>
+    <script>
+        const letters = ['A', 'B', 'C', 'D', 'E']; // Example letters
+const validWords = ['BAD', 'CAB', 'ACE', 'BEC', 'DAB']; // Example valid words
+const foundWords = new Set();
+let score = 0;
+
+function displayLetters() {
+    const lettersDiv = document.getElementById("letters");
+    lettersDiv.innerText = letters.join(" ");
+}
+
+function displayHints() {
+    const hintsDiv = document.getElementById("hints");
+    hintsDiv.innerText = `Possible words: ${validWords.join(", ")}`;
+}
+
+function checkWord(word) {
+    if (validWords.includes(word) && !foundWords.has(word)) {
+        foundWords.add(word);
+        score++;
+        document.getElementById("found-words").innerText = `Found Words: ${Array.from(foundWords).join(", ")}`;
+        document.getElementById("message").innerText = `Good job! Score: ${score}`;
+        document.getElementById("word-input").value = '';
+    } else if (foundWords.has(word)) {
+        document.getElementById("message").innerText = "You've already found that word!";
+    } else {
+        document.getElementById("message").innerText = "Not a valid word!";
+    }
+}
+
+document.getElementById("submit").addEventListener("click", () => {
+    const wordInput = document.getElementById("word-input").value.toUpperCase();
+    checkWord(wordInput);
+});
+
+document.getElementById("restart").addEventListener("click", () => {
+    foundWords.clear();
+    score = 0;
+    displayLetters();
+    displayHints();
+    document.getElementById("found-words").innerText = '';
+    document.getElementById("message").innerText = '';
+    document.getElementById("word-input").value = '';
+    document.getElementById("restart").classList.add("hidden");
+});
+
+displayLetters();
+displayHints();
+
+    </script>
+</body>
+</html>

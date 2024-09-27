@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabulary Section</title>
+    
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f4f8;
+    text-align: center;
+    padding: 30px;
+}
+
+h1 {
+
+    color: #ec0cda;
+}
+
+section#game-selection {
+    display: flex;
+    justify-content: space-around;
+    gap: 10px;
+    margin-bottom: 40px;
+}
+
+.game-card {
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    width: 300px;
+    transition: transform 0.3s ease;
+}
+
+.game-card:hover {
+    transform: scale(1.05);
+}
+
+.game-container {
+    display: flex;
+    justify-content: space-around;
+}
+
+.planets, .facts {
+    width: 40%;
+}
+
+p {
+    padding: 10px;
+    background-color: #fff;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.answers button {
+    padding: 10px 20px;
+    margin: 10px;
+    background-color: #f437e1;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.answers button:hover {
+    background-color: #b70da9;
+}
+
+#result {
+    margin-top: 20px;
+    font-size: 1.2em;
+    color: #333;
+}
+button {
+            padding: 12px 25px;
+            font-size: 1.2rem;
+            background-color: #ec0cda;
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            margin: 10px;
+            display: block;
+            width: 80%;
+            margin: 20px auto;
+        }
+        button:hover {
+            background-color: #ba0ca3;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Vocabulary Section</h1>
+        <p>Select a game to start playing and learning!</p>
+    </header>
+
+    <!-- Game Selection -->
+    <section id="game-selection">
+        <div class="game-card" onclick="showGame('trivia')">
+            <h2>Vocabulary Game</h2>
+            <button class="button" onclick="triviquiz()">Play </button>
+        </div>
+
+        <div class="game-card" onclick="showGame('planetMatching')">
+            <h2>WordEscape</h2>
+            
+            <button class="button" onclick="planetgame()">Play </button>
+        </div>
+
+        <div class="game-card" onclick="showGame('animalSounds')">
+            <h2>Alphabet Match</h2>
+            
+            <button class="button" onclick="bodygame()">Play </button>
+        </div>
+    </section>
+
+    <!-- Game Containers -->
+    <script>
+        function triviquiz(){
+            window.location.href="vocabalary.html";
+        }
+        function planetgame(){
+            window.location.href="wordescap.html";
+        }
+        function bodygame(){
+            window.location.href="numgs.html";
+        }
+    </script>
+    
+</body>
+</html>

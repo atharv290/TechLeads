@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Science Trivia for Kids</title>
+    
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f2f4f7;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 300px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #2c3e50;
+        }
+
+        h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        button.correct {
+            background-color: #2ecc71;
+        }
+
+        button.wrong {
+            background-color: #e74c3c;
+        }
+
+        .next-btn {
+            background-color: #f39c12;
+            padding: 12px;
+            display: none;
+        }
+
+        .next-btn:hover {
+            background-color: #e67e22;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Science Trivia Game</h1>
+        <div id="question-container">
+            <h2 id="question"></h2>
+            <div id="answer-buttons" class="btn-group"></div>
+        </div>
+        <button id="next-button" class="next-btn" onclick="nextQuestion()">Next Question</button>
+        <div>
+            <button id="backButton" onclick="backToMain()">Back</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "What color is the sky?",
+                answers: [
+                    { text: "Blue", correct: true },
+                    { text: "Green", correct: false },
+                    { text: "Red", correct: false },
+                    { text: "Yellow", correct: false }
+                ]
+            },
+            {
+                question: "Which animal says 'Moo'?",
+                answers: [
+                    { text: "Cow", correct: true },
+                    { text: "Cat", correct: false },
+                    { text: "Dog", correct: false },
+                    { text: "Sheep", correct: false }
+                ]
+            },
+            {
+                question: "What shape is a ball?",
+                answers: [
+                    { text: "Round", correct: true },
+                    { text: "Square", correct: false },
+                    { text: "Triangle", correct: false },
+                    { text: "Rectangle", correct: false }
+                ]
+            },
+            {
+                question: "Which part of the plant is green?",
+                answers: [
+                    { text: "Leaves", correct: true },
+                    { text: "Roots", correct: false },
+                    { text: "Flower", correct: false },
+                    { text: "Stem", correct: false }
+                ]
+            },
+            {
+                question: "Which is the fastest animal?",
+                answers: [
+                    { text: "Cheetah", correct: true },
+                    { text: "Elephant", correct: false },
+                    { text: "Horse", correct: false },
+                    { text: "Rabbit", correct: false }
+                ]
+            },
+            {
+                question: "How many legs does a spider have?",
+                answers: [
+                    { text: "Eight", correct: true },
+                    { text: "Six", correct: false },
+                    { text: "Four", correct: false },
+                    { text: "Two", correct: false }
+                ]
+            },
+            {
+                question: "Which planet is closest to the Sun?",
+                answers: [
+                    { text: "Mercury", correct: true },
+                    { text: "Venus", correct: false },
+                    { text: "Earth", correct: false },
+                    { text: "Mars", correct: false }
+                ]
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let shuffledQuestions = [];
+        let score = 0; // Initialize score
+
+        // Shuffle the questions and pick a random subset of 5 questions
+        function shuffleQuestions() {
+            shuffledQuestions = questions
+                .sort(() => Math.random() - 0.5) // Shuffle questions
+                .slice(0, 5); // Select the first 5 questions from the shuffled array
+        }
+
+        const questionElement = document.getElementById('question');
+        const answerButtonsElement = document.getElementById('answer-buttons');
+        const nextButton = document.getElementById('next-button');
+
+        function startGame() {
+            shuffleQuestions(); // Shuffle and pick new questions every time
+            currentQuestionIndex = 0;
+            score = 0; // Reset score at the start of the game
+            nextButton.style.display = 'none';
+            showQuestion(shuffledQuestions[currentQuestionIndex]);
+        }
+
+        function backToMain() {
+            window.location.href = "sciencemain.html";
+        }
+
+        function showQuestion(question) {
+            resetState();
+            questionElement.innerText = question.question;
+
+            question.answers.forEach(answer => {
+                const button = document.createElement('button');
+                button.innerText = answer.text;
+                button.classList.add('btn');
+                button.onclick = () => selectAnswer(button, answer);
+                answerButtonsElement.appendChild(button);
+            });
+        }
+
+        function resetState() {
+            nextButton.style.display = 'none';
+            while (answerButtonsElement.firstChild) {
+                answerButtonsElement.removeChild(answerButtonsElement.firstChild);
+            }
+        }
+
+        function selectAnswer(button, answer) {
+            if (answer.correct) {
+                button.classList.add('correct');
+                score++; // Increment score for correct answers
+                showFeedback("Correct!", true);
+            } else {
+                button.classList.add('wrong');
+                showFeedback(`Wrong! The correct answer is: ${getCorrectAnswer()}`, false);
+            }
+            Array.from(answerButtonsElement.children).forEach(btn => {
+                btn.disabled = true;
+            });
+            nextButton.style.display = 'block';
+        }
+
+        function getCorrectAnswer() {
+            return shuffledQuestions[currentQuestionIndex].answers.find(answer => answer.correct).text;
+        }
+
+        function showFeedback(message, isCorrect) {
+            const feedback = document.createElement('div');
+            feedback.innerText = message;
+            feedback.className = isCorrect ? 'correct-feedback' : 'wrong-feedback';
+            document.body.appendChild(feedback);
+
+            setTimeout(() => {
+                feedback.remove();
+            }, 1500);
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < shuffledQuestions.length) {
+                showQuestion(shuffledQuestions[currentQuestionIndex]);
+            } else {
+                // Show game end and save the score
+                alert(`You've completed the trivia! Your score is: ${score} out of ${shuffledQuestions.length}`);
+                saveScore(score); // Save score automatically
+                startGame(); // Restart the game
+            }
+        }
+
+        function saveScore(score) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "save_score.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+            // Assuming you have a way to get the user's ID
+            var userId = 1; // Replace this with the actual user ID from your session or authentication method.
+
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    console.log('Score saved successfully: ' + xhr.responseText);
+                    alert('Score saved successfully!');
+                } else {
+                    console.error('Error saving score: ' + xhr.status);
+                    alert('Error saving score. Please try again.');
+                }
+            };
+
+            // Send the score along with the user ID
+            xhr.send("user_id=" + userId + "&score=" + score);
+        }
+
+
+        startGame();
+
+    </script>
+</body>
+</html>
